@@ -1,6 +1,6 @@
 {
   "name": "gulp-environment",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Adds easy environment configuration and conditional piping to Gulp, based on NODE_ENV or parameters with yargs. ",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/helloitsdan/gulp-environment#readme",
   "dependencies": {
-    "through2": "^2.0.1",
+    "gulp-util": "^3.0.7",
     "yargs": "^4.6.0"
   }
 }

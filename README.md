@@ -21,9 +21,9 @@ gulp.task('minify-css', function() {
   return gulp.src([
     'assets/scripts/**/*.js'
   ])
-    .pipe(env.if.production(
-      cleanCSS(), dontRunThisOnLive()
-    ))
+    .pipe(
+      env.if.production(cleanCSS()).else(neverRunThisOnLive())
+    )
     .pipe(gulp.dest('web/assets/scripts/'))
 })
 ```
@@ -36,13 +36,15 @@ Each of the methods below will be created for each of the environments defined i
 
 A getter/setter to access the current environment.
 
-### env.if.environment(ifTrue[, ifFalse])
+### env.if.environment(ifTrue)[.else(ifFalse)]
 
-Returns `ifTrue` if the current environment is `environment`, otherwise returns `ifFalse`. If `ifFalse` is undefined, a no-op is returned instead.
+Returns `ifTrue` if the current environment is `environment`, otherwise returns a no-op. If the `else` chaining function is used, `ifFalse` will be returned when not in `environment`, otherwise `ifTrue` will be returned as normal.
 
 ```
   ...
-  .pipe(env.if.production(cleanCSS()))
+  .pipe(
+    env.if.production(cleanCSS()).else(neverRunThisOnLive())
+  )
   ...
 ```
 
@@ -54,7 +56,9 @@ Returns `ifFalse` if the current environment is not `environment`, otherwise ret
 
 ```
   ...
-  .pipe(env.if.not.development(cleanCSS()))
+  .pipe(
+    env.if.not.development(cleanCSS())
+  )
   ...
 ```
 

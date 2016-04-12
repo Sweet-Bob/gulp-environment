@@ -1,5 +1,5 @@
 var yargs = require('yargs')
-var noop  = require('through2').obj // noop noop [pingu noises]
+var util = require('gulp-util')
 
 var config = require('./config.json')
 
@@ -37,17 +37,17 @@ function getEnvironment(param) {
 // returns {ifTrue} if the current environment is {environment}
 // otherwise returns either {ifFalse} or a noop if {ifFalse} is undefined
 function pipeIf(environment, ifTrue, ifFalse) {
-  if (currentEnvironment === environment) {
+  if (currentEnvironment.is(environment)) {
     return ifTrue
   } else {
-    return ifFalse || noop()
+    return ifFalse || util.noop() // noop noop [pingu noises]
   }
 }
 
 // returns a noop if the current environment is {environment}
 // otherwise returns {ifFalse}
 function pipeIfNot(environment, ifFalse) {
-  return pipeIf(environment, noop(), ifFalse)
+  return pipeIf(environment, util.noop(), ifFalse)
 }
 
 // set up --env=x parameter, without choices/default as it'll get
@@ -82,22 +82,38 @@ var envModule = {
   }
 }
 
+// expose the bare conditional functions if someone would rather use those
+// than chaining things together
 envModule.if = pipeIf
 envModule.if.not = pipeIfNot
 
+// add if/else/not conditional piping functions to the exported module
+// for each environment
 for (i in environments) {
-  var environment = environments[i]
-  var key = environment.name
+  (function(environment) {
+    var key = environment.name
 
-  envModule[key] = environment
+    envModule[key] = environment
 
-  envModule.if[key] = function(ifTrue, ifFalse) {
-    return pipeIf(environment, ifTrue, ifFalse)
-  }
+    envModule.if[key] = function(trueOp) {
+      var result = pipeIf(environment, trueOp)
 
-  envModule.if.not[key] = function(ifFalse) {
-    return pipeIfNot(environment, ifFalse)
-  }
+      // augument {ifTrue} with a cute chaining function which allows for better
+      // syntax of else statements; env.if.development(trueFn, falseFn) vs.
+      // env.if.development(trueFn).else(falseFn)
+      result.else = function(falseOp) {
+        return result === trueOp ? trueOp : falseOp
+      }
+
+      return result
+    }
+
+    envModule.if.not[key] = function(ifFalse) {
+      return pipeIfNot(environment, ifFalse)
+    }
+  })(environments[i]);
 }
+
+util.log('Running in %s mode', util.colors.magenta(currentEnvironment.name))
 
 module.exports = envModule
