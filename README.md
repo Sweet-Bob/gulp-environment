@@ -19,12 +19,12 @@ var cleanCSS = require('gulp-clean-css')
 
 gulp.task('minify-css', function() {
   return gulp.src([
-    'assets/scripts/**/*.js'
+    'assets/css/**/*.css'
   ])
     .pipe(
       env.if.production(cleanCSS()).else(neverRunThisOnLive())
     )
-    .pipe(gulp.dest('web/assets/scripts/'))
+    .pipe(gulp.dest('web/assets/css/'))
 })
 ```
 
