@@ -6,6 +6,10 @@ with :purple_heart:,
 
 # Usage
 
+This module will load a list of available environments from config.json and try to figure out which one it's currently running in by looking at the `env` parameter first, falling back to the `NODE_ENV` environment varaible if that doesn't exist, and then `config.default` last. These can be specified either by name directly, or by one of a few aliases, also defined in config.json. eg. development mode can be referenced as either `development`, `dev`, or `local`.
+
+To run gulp in production mode using this module, specify your environment either via `gulp --env=production` or `NODE_ENV=production gulp`. Your gulp tasks will then be able to conditionally pipe plugins as follows...
+
 ## Example
 
 ```javascript
@@ -17,18 +21,20 @@ gulp.task('minify-css', function() {
   return gulp.src([
     'assets/scripts/**/*.js'
   ])
-    .pipe(env.if.not.production(cleanCSS()))
+    .pipe(env.if.production(
+      cleanCSS(), dontRunThisOnLive()
+    ))
     .pipe(gulp.dest('web/assets/scripts/'))
 })
 ```
 
 ## API
 
-Each of the methods below will be created for each of the environments defined in `config.js`&mdash;by default, this is development, qa, and production.
+Each of the methods below will be created for each of the environments defined in config.js&mdash;by default, this is development, qa, and production.
 
 ### env.current
 
-A getter/setter to access the current environment. `env.current` will return an object representing the current environment which can be passed to all other functions in this module.
+A getter/setter to access the current environment.
 
 ### env.if.environment(ifTrue[, ifFalse])
 
