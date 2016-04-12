@@ -1,0 +1,30 @@
+{
+  "name": "gulp-environment",
+  "version": "1.0.0",
+  "description": "Adds easy environment configuration and conditional piping to Gulp, based on NODE_ENV or parameters with yargs. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/helloitsdan/gulp-environment.git"
+  },
+  "keywords": [
+    "gulp",
+    "yargs",
+    "environments",
+    "env",
+    "NODE_ENV"
+  ],
+  "author": "dani quinn sexton (http://twitter.com/helloitsdan)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/helloitsdan/gulp-environment/issues"
+  },
+  "homepage": "https://github.com/helloitsdan/gulp-environment#readme",
+  "dependencies": {
+    "through2": "^2.0.1",
+    "yargs": "^4.6.0"
+  }
+}

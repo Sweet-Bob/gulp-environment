@@ -1,0 +1,22 @@
+{
+  "environments": [
+    {
+      "name": "development",
+      "aliases": [ "dev", "local" ]
+    },
+    {
+      "name": "qa",
+      "aliases": [ "staging", "test" ]
+    },
+    {
+      "name": "production",
+      "aliases": [ "prod", "live" ]
+    }
+  ],
+
+  "default": "production",
+  
+  "yargs": {
+    "aliases": ["environment", "NODE_ENV"]
+  }
+}
