@@ -3,6 +3,14 @@ var util = require('gulp-util')
 
 var config = require('./config.json')
 
+// set up --env=x parameter, without choices/default as it'll get
+// checked later at the same time as as NODE_ENV
+yargs.option('env', {
+  alias: config.yargs.aliases,
+  required: false,
+  type: 'string'
+})
+
 // returns a boolean representing whether or not {env} and
 // {toCheck} represent the same environment
 function isEnvironment(env, toCheck) {
@@ -50,28 +58,6 @@ function pipeIfNot(environment, ifFalse) {
   return pipeIf(environment, util.noop(), ifFalse)
 }
 
-// set up --env=x parameter, without choices/default as it'll get
-// checked later at the same time as as NODE_ENV
-yargs.option('env', {
-  alias: config.yargs.aliases,
-  required: false,
-  type: 'string'
-})
-
-// go through all provided environments and add convenience functions
-var environments = config.environments.map(function(env) {
-  env.is = function(name) {
-    return isEnvironment(env, name)
-  }
-
-  return env
-})
-
-// get env from parameters or, if it's not there,
-// try and read it from the system's environment variables
-// if no/an invalid environment has been passed, default to production
-var currentEnvironment = getEnvironment(yargs.argv.env || process.env.NODE_ENV)
-
 var envModule = {
   get current() {
     return currentEnvironment
@@ -88,31 +74,40 @@ envModule.if = pipeIf
 envModule.if.not = pipeIfNot
 
 // add if/else/not conditional piping functions to the exported module
-// for each environment
-for (i in environments) {
-  (function(environment) {
-    var key = environment.name
+// and convenience functions for each environment
+var environments = config.environments.map(function(env) {
+  var key = env.name
 
-    envModule[key] = environment
+  env.is = function(name) {
+    return isEnvironment(env, name)
+  }
 
-    envModule.if[key] = function(trueOp) {
-      var result = pipeIf(environment, trueOp)
+  envModule[key] = env
 
-      // augument {ifTrue} with a cute chaining function which allows for better
-      // syntax of else statements; env.if.development(trueFn, falseFn) vs.
-      // env.if.development(trueFn).else(falseFn)
-      result.else = function(falseOp) {
-        return result === trueOp ? trueOp : falseOp
-      }
+  envModule.if[key] = function(trueOp) {
+    var result = pipeIf(env, trueOp)
 
-      return result
+    // augument {ifTrue} with a cute chaining function which allows for better
+    // syntax of else statements; env.if.development(trueFn, falseFn) vs.
+    // env.if.development(trueFn).else(falseFn)
+    result.else = function(falseOp) {
+      return result === trueOp ? trueOp : falseOp
     }
 
-    envModule.if.not[key] = function(ifFalse) {
-      return pipeIfNot(environment, ifFalse)
-    }
-  })(environments[i]);
-}
+    return result
+  }
+
+  envModule.if.not[key] = function(ifFalse) {
+    return pipeIfNot(env, ifFalse)
+  }
+
+  return env
+})
+
+// get env from parameters or, if it's not there,
+// try and read it from the system's environment variables
+// if no/an invalid environment has been passed, default to production
+var currentEnvironment = getEnvironment(yargs.argv.env || process.env.NODE_ENV)
 
 util.log('Running in %s mode', util.colors.magenta(currentEnvironment.name))
 
