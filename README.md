@@ -1,8 +1,8 @@
 # gulp-environment
 Adds easy environment configuration and conditional piping to Gulp, based on NODE_ENV or parameters via yargs.
 
-with :purple_heart:,
-—@helloitsdan
+with :purple_heart:,<br />
+&mdash;@helloitsdan
 
 # Usage
 
