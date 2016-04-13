@@ -36,6 +36,16 @@ Each of the methods below will be created for each of the environments defined i
 
 A getter/setter to access the current environment.
 
+### env.is.environment()
+
+Returns a boolean representing whether or not the current environment is `environment`.
+
+```
+  var headers = env.is.qa() ? "QA" : "Live";
+```
+
+This function can also be accessed manually via `env.is(environment)`
+
 ### env.if.environment(ifTrue)[.else(ifFalse)]
 
 Returns `ifTrue` if the current environment is `environment`, otherwise returns a no-op. If the `else` chaining function is used, `ifFalse` will be returned when not in `environment`, otherwise `ifTrue` will be returned as normal.

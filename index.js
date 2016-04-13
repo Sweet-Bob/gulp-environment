@@ -68,8 +68,9 @@ var envModule = {
   }
 }
 
-// expose the bare conditional functions if someone would rather use those
+// expose the bare functions if someone would rather use those
 // than chaining things together
+envModule.is = isEnvironment
 envModule.if = pipeIf
 envModule.if.not = pipeIfNot
 
@@ -78,18 +79,25 @@ envModule.if.not = pipeIfNot
 var environments = config.environments.map(function(env) {
   var key = env.name
 
-  env.is = function(name) {
-    return isEnvironment(env, name)
+  // enables comparison of environment objects directly through
+  // env.current.is(env.environment) or env.current.is('environment')
+  env.is = function(toCompare) {
+    return envModule.is(env, toCompare)
   }
 
   envModule[key] = env
 
+  // enables checking of current env quickly through env.is.environment()
+  envModule.is[key] = function() {
+    return envModule.is(currentEnvironment, env)
+  }
+
   envModule.if[key] = function(trueOp) {
-    var result = pipeIf(env, trueOp)
+    var result = envModule.if(env, trueOp)
 
     // augument {ifTrue} with a cute chaining function which allows for better
-    // syntax of else statements; env.if.development(trueFn, falseFn) vs.
-    // env.if.development(trueFn).else(falseFn)
+    // syntax of else statements; env.if.environment(trueFn, falseFn) vs.
+    // env.if.environment(trueFn).else(falseFn)
     result.else = function(falseOp) {
       return result === trueOp ? trueOp : falseOp
     }
@@ -98,7 +106,7 @@ var environments = config.environments.map(function(env) {
   }
 
   envModule.if.not[key] = function(ifFalse) {
-    return pipeIfNot(env, ifFalse)
+    return envModule.if.not(env, ifFalse)
   }
 
   return env
