@@ -4,6 +4,8 @@ Adds easy environment configuration and conditional piping to Gulp, based on NOD
 with :purple_heart:,<br />
 &mdash;@helloitsdan
 
+[![Build Status](https://travis-ci.org/helloitsdan/gulp-environment.svg?branch=master)](https://travis-ci.org/helloitsdan/gulp-environment)
+
 # Usage
 
 This module will load a list of available environments from config.json and try to figure out which one it's currently running in by looking at the `env` parameter first, falling back to the `NODE_ENV` environment varaible if that doesn't exist, and then `config.default` last. These can be specified either by name directly, or by one of a few aliases, also defined in config.json. eg. development mode can be referenced as either `development`, `dev`, or `local`.
