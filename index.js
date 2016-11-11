@@ -1,7 +1,13 @@
 var yargs = require('yargs')
 var util = require('gulp-util')
 
-var config = require('./config.json')
+var config;
+
+try {
+  config = require('../../config.json');
+} catch (e) {
+  config = require('./config.json');
+}
 
 // set up --env=x parameter, without choices/default as it'll get
 // checked later at the same time as as NODE_ENV
